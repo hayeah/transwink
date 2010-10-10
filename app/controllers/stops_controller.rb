@@ -26,8 +26,12 @@ class StopsController < ApplicationController
   # boundBox: (-123.102364,49.277775,-123.116096,49.288048)
   # bound box
   # (-123.102364 < x AND x < -123.116096 )
+
+  # http://184.73.162.194:5002/stops/in/49.28291/-123.1092/49.27777/-123.1024/49.28805/-123.1161
   def in
-    x1,y1,x2,y2 = params[:coords].split(",").map { |f| Float(f) }
+    # :cy/:cx/:y1/:x1/:y2/:x2
+    cy,cx,y2,x2,y1,x1 = params[:coords].split "/"
+    # x1,y1,x2,y2 = params[:x1], params[:y1], params[:x2], params[:y2]
     uids = Stop.select("distinct uid").where(["? < x AND x < ? ",x1,x2]).where(["? < y AND y < ? ",y2,y1]).all
     stops = Stop.where("uid" => uids.map(&:uid)).includes(:route)
     # cx = (x2 - x1).abs / 2.0
