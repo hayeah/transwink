@@ -10,12 +10,14 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20101009161916) do
+ActiveRecord::Schema.define(:version => 20101010192919) do
 
   create_table "routes", :force => true do |t|
     t.string "uid"
     t.string "name"
   end
+
+  add_index "routes", ["uid"], :name => "index_routes_on_uid"
 
   create_table "stops", :force => true do |t|
     t.string  "uid"
@@ -26,5 +28,8 @@ ActiveRecord::Schema.define(:version => 20101009161916) do
     t.float   "y"
     t.integer "route_id"
   end
+
+  add_index "stops", ["route_id"], :name => "index_stops_on_route_id"
+  add_index "stops", ["x", "y"], :name => "index_stops_on_x_and_y"
 
 end

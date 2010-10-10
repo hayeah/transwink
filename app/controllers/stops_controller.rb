@@ -48,17 +48,17 @@ class StopsController < ApplicationController
     # -123.1,49.2,123.2,49.3
     # http://localhost:3000/stops/in/-123.1,49.2,-123.09,49.3
     # http://localhost:3000/stops/in/-123.116096,49.288048,-123.102364,49.277775
-  @json = stops.map do |stop|
-    route_stops = Stop.where(:uid => stop.uid).includes(&:route).limit(20).all
-    { "description" => stop.name,
-       "latlng" => [stop.y,stop.x],
-       "id" => stop.uid,
-       "direction" => (stop.direction == "West" ? "W" : "E"),
-     "routes" => route_stops.inject({}) { |h,route_stop|
+    @json = stops.map do |stop|
+      route_stops = Stop.where(:uid => stop.uid).includes(&:route).all
+      { "description" => stop.name,
+        "latlng" => [stop.y,stop.x],
+        "id" => stop.uid,
+        "direction" => (stop.direction == "West" ? "W" : "E"),
+        "routes" => route_stops.inject({}) { |h,route_stop|
           h[route_stop.route.uid] = route_stop.times
           h
-       }
-     }
+        }
+      }
     end
 
     render :text => @json.to_json
