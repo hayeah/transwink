@@ -70,4 +70,5 @@ Twink::Application.routes.draw do
   end
 
   match "stops/in/:coords" => "stops#in", :coords => /.*/
+  match "search/:q" => "search#search", :q => /.*/
 end
