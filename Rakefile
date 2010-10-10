@@ -8,6 +8,7 @@ Twink::Application.load_tasks
 
 namespace :translink do
   task :update => :environment do
-    Route.populate
+    n = ENV["n"] && ENV["n"].to_i
+    Route.populate(n)
   end
 end

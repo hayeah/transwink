@@ -1,15 +1,18 @@
 require 'translink'
 class Route < ActiveRecord::Base
   has_many :stops
-  def self.populate
+  def self.populate(n=nil)
     api = Translink.new
     Route.transaction do
       Route.delete_all
       Stop.delete_all
-      api.routes.each do |route|
-        p route.name
+      routes = api.routes
+      if n
+        routes = routes[0..n]
+      end
+      routes.each do |route|
         record = Route.create(:uid => route.id,:name => route.name)
-        (route.west + route.east).each do |stop|
+        (route.west + route.east + route.north + route.south).each do |stop|
           p stop.name
           record.stops.create(:uid => stop.id,
                               :name => stop.name,

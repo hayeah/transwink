@@ -71,6 +71,14 @@ class Translink
       @east ||= stops("East")
     end
 
+    def north
+      @east ||= stops("North")
+    end
+
+    def south
+      @east ||= stops("South")
+    end
+
     def to_json
       { "id" => id,
         "name" => name,
