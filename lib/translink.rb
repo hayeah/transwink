@@ -1,55 +1,58 @@
 require 'httparty'
 require 'json'
+require 'fastercsv'
 require 'pp'
 
 # we can use cron to update the schedule every 40 minutes (or something)
 class Translink
   class API
     class << self
-      def singleton
-        @singleton ||= self.new
-      end
-
       def get(resource,query,format=:json)
-        singleton.get(resource,query,format)
+        response = HTTParty.get("http://m.translink.ca/api/#{resource}/#{query}",
+                                :format => format)
+        unless response.code == 200
+          p response.message
+          raise "shit"
+        end
+        response.parsed_response
       end
-    end
-    
-    def get(resource,query,format=:json)
-      response = HTTParty.get("http://m.translink.ca/api/#{resource}/#{query}",
-                              :format => format)
-      unless response.code == 200
-        p response.message
-        raise "shit"
-      end
-      response.parsed_response
     end
   end
 
   class Stop
-    attr_reader :id, :name, :times
+    attr_reader :id, :name, :times, :direction
+    class << self
+      def csv
+        return @csv if @csv
+        @csv = {}
+        # {"parent_station"=>" ",
+        #   "stop_code"=>"50004",
+        #   "stop_lat"=>"49.282093",
+        #   "stop_lon"=>"-123.140503",
+        #   "stop_id"=>"4",
+        #   "zone_id"=>"1",
+        #   "location_type"=>"0",
+        #   "stop_url"=>" ",
+        #   "stop_desc"=>"BEACH AV @ NICOLA ST",
+        #   "stop_name"=>"EB BEACH AV FS NICOLA ST"}
+        FasterCSV.open("data/stops.txt",:headers => true).each do |row|
+          @csv[row["stop_code"].to_i] = row.to_hash
+        end
+        @csv
+      end
+    end
+
+    attr_reader :attributes, :id, :x, :y, :name, :times
     def initialize(attr)
-      p attr
       @id = attr["stopID"]
+      if @extra = Stop.csv[@id]
+        @x = @extra["stop_lat"]
+        @y = @extra["stop_lon"]
+      end
+      @direction = attr["direction"]
       @name = attr["stopName"]
-      @times = attr["times"]
-    end
-
-    def xy
-      # {"kml"=>
-      #   {"Placemark"=>
-      #     {"name"=>"#51842 Burrard Stn Bay 4",
-      #       "Point"=>{"coordinates"=>"-123.121594,49.286591"}},
-      #     "xmlns"=>"http://www.opengis.net/kml/2.2"}}
-      @xy ||= API.get("kml/stop",id,:xml)["kml"]["Placemark"]["Point"]["coordinates"].split(",")
-    end
-
-    def x
-      xy[0]
-    end
-
-    def y
-      xy[1]
+      @times = attr["times"].join("$")
+      @attributes = attr
     end
   end
 
@@ -66,6 +69,13 @@ class Translink
 
     def east
       @east ||= stops("East")
+    end
+
+    def to_json
+      { "id" => id,
+        "name" => name,
+        "west" => west.map(&:to_json),
+        "east" => east.map(&:to_json)}
     end
 
     private
@@ -85,14 +95,37 @@ class Translink
   end
 end
 
+class << Translink
+  # eager load the values in parallel
+  def scrape_1
+    api = Translink.new
+    route = api.routes.first
+    stops = route.west
+    p stops.length
+    
+    stops.each do |s|
+      p s.name
+      p s.to_json
+    end
+  end
 
-# api = Translink.new
+  def scrape_2
+    api = Translink.new
+    route = api.routes.first
+    stops = route.west
+    p stops.length
+  end
+end
 
-# routes =  api.routes
+# pp Translink::Stop.csv.keys.uniq.size
 
-# route = routes.first
+# case ARGV[1]
+# when "2"
+#   Translink.scrape_2
+# else
+#   Translink.scrape_1
+# end
 
-# stop = route.west.first
 
 # # pp stop
 # pp stop.xy

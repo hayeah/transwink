@@ -13,6 +13,10 @@ gem 'haml'
 
 gem 'httparty'
 
+gem 'json'
+
+gem 'fastercsv'
+
 # Use unicorn as the web server
 # gem 'unicorn'
 

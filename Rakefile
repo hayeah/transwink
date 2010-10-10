@@ -5,3 +5,9 @@ require File.expand_path('../config/application', __FILE__)
 require 'rake'
 
 Twink::Application.load_tasks
+
+namespace :translink do
+  task :update => :environment do
+    Route.populate
+  end
+end
