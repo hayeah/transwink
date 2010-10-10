@@ -1,3 +1,7 @@
 development:
   adapter: mysql
   database: twink_d
+
+production:
+  adapter: mysql
+  database: twink_p
