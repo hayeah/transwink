@@ -26,11 +26,23 @@ class Route < ActiveRecord::Base
   end
 
   def west
-    stops.where(:direction => "West")
+    direction("West")
   end
 
   def east
-    stops.where(:direction => "East")
+    direction("East")
+  end
+
+  def north
+    direction("North")
+  end
+
+  def south
+    direction("South")
+  end
+
+  def direction(dir)
+    stops.where(:direction => dir)
   end
 
   def to_hash
@@ -38,7 +50,9 @@ class Route < ActiveRecord::Base
       "route_id" => uid,
       "name" => name,
       "west" => west.map(&:to_hash),
-      "east" => east.map(&:to_hash)
+      "east" => east.map(&:to_hash),
+      "north" => north.map(&:to_hash),
+      "south" => south.map(&:to_hash)
     }
   end
 end
