@@ -72,11 +72,11 @@ class Translink
     end
 
     def north
-      @east ||= stops("North")
+      @north ||= stops("North")
     end
 
     def south
-      @east ||= stops("South")
+      @south ||= stops("South")
     end
 
     def to_json
