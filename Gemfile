@@ -15,7 +15,7 @@ gem 'httparty'
 
 gem 'json'
 
-gem 'fastercsv'
+gem 'fastercsv' if RUBY_VERSION < '1.9'
 
 # Use unicorn as the web server
 # gem 'unicorn'

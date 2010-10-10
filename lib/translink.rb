@@ -1,6 +1,6 @@
 require 'httparty'
 require 'json'
-require 'fastercsv'
+require RUBY_VERSION < '1.9' ? 'fastercsv' : 'csv'
 require 'pp'
 
 # we can use cron to update the schedule every 40 minutes (or something)
@@ -35,7 +35,7 @@ class Translink
         #   "stop_url"=>" ",
         #   "stop_desc"=>"BEACH AV @ NICOLA ST",
         #   "stop_name"=>"EB BEACH AV FS NICOLA ST"}
-        FasterCSV.open("data/stops.txt",:headers => true).each do |row|
+        (RUBY_VERSION < '1.9' ? FasterCSV : CSV).open("data/stops.txt",:headers => true).each do |row|
           @csv[row["stop_code"].to_i] = row.to_hash
         end
         @csv
