@@ -61,10 +61,13 @@ Twink::Application.routes.draw do
       get :find
     end
   end
+
   
   resources :stops do 
-    collection do
-      get :find
-    end
+    # collection do
+    #   get :in
+    # end
   end
+
+  match "stops/in/:coords" => "stops#in", :coords => /.*/
 end

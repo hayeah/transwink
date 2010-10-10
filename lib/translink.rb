@@ -46,8 +46,8 @@ class Translink
     def initialize(attr)
       @id = attr["stopID"]
       if @extra = Stop.csv[@id]
-        @x = @extra["stop_lat"]
-        @y = @extra["stop_lon"]
+        @x = @extra["stop_lon"]
+        @y = @extra["stop_lat"]
       end
       @direction = attr["direction"]
       @name = attr["stopName"]
