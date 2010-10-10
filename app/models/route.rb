@@ -6,7 +6,7 @@ class Route < ActiveRecord::Base
     Route.transaction do
       Route.delete_all
       Stop.delete_all
-      api.routes[0..5].each do |route|
+      api.routes.each do |route|
         p route.name
         record = Route.create(:uid => route.id,:name => route.name)
         (route.west + route.east).each do |stop|
