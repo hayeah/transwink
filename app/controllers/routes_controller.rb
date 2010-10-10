@@ -2,7 +2,7 @@ class RoutesController < ApplicationController
   def show
     id = params["id"]
     if id.length < 3
-      id += "0" * (3-id.length)
+      id = "0" * (3-id.length) + id
     end
     id = id.downcase
     route = Route.where(:uid => id).first
