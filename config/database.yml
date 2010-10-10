@@ -5,3 +5,4 @@ development:
 production:
   adapter: mysql
   database: twink_p
+  username: ubuntu
